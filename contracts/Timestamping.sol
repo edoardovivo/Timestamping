@@ -1,23 +1,48 @@
 pragma solidity ^0.4.17;
 
-contract Migrations {
-  address public owner;
-  uint public last_completed_migration;
+contract Timestamping {
+  
+	address public owner;
 
-  modifier restricted() {
-    if (msg.sender == owner) _;
-  }
+	event Upload(address _sender, string h);
+	event Verify(address _verifier, address _toverify, string h);
 
-  function Migrations() public {
-    owner = msg.sender;
-  }
+	struct dataProperties {
+		uint blockNumber;
+		uint blockTimestamp;
+		string data;
+	}
 
-  function setCompleted(uint completed) public restricted {
-    last_completed_migration = completed;
-  }
+	mapping (address => dataProperties[]) userdata;
 
-  function upgrade(address new_address) public restricted {
-    Migrations upgraded = Migrations(new_address);
-    upgraded.setCompleted(last_completed_migration);
-  }
+
+	function Timestamping() public payable {
+
+		owner = msg.sender;
+
+	}
+
+	function uploadHash(string h) public {
+		dataProperties dataprop; 
+		dataprop.blockNumber = block.number();
+		dataprop.blockTimestamp = block.timestamp();
+		dataprop.data = h;
+		userdata[msg.sender].push(dataprop);
+
+	}
+
+	function verifyHash(address toverify, string providedHash) public returns (uint, uint) {
+		dataProperties[] dataprop = userdata[toverify];
+		for (uint i=0; i < dataprop.lenght; i++) {
+			if (dataprop[i].data == providedHash) {
+				return (dataprop[i].blockNumber, dataprop[i].blockTimestamp)
+			}
+
+		}
+		return (0, 0)
+
+	}
+
+
+
 }
