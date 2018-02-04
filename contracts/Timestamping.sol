@@ -1,5 +1,9 @@
 pragma solidity ^0.4.17;
 
+//import "../Documents/Crypto/dapp-bin/library/stringUtils.sol";
+
+import "github.com/ethereum/dapp-bin/library/stringUtils.sol";
+
 contract Timestamping {
   
 	address public owner;
@@ -16,7 +20,7 @@ contract Timestamping {
 	mapping (address => dataProperties[]) userdata;
 
 
-	function Timestamping() public payable {
+	function Timestamping(address _stringutilsAddress) public payable {
 
 		owner = msg.sender;
 
@@ -24,25 +28,30 @@ contract Timestamping {
 
 	function uploadHash(string h) public {
 		dataProperties dataprop; 
-		dataprop.blockNumber = block.number();
-		dataprop.blockTimestamp = block.timestamp();
+		dataprop.blockNumber = block.number;
+		dataprop.blockTimestamp = block.timestamp;
 		dataprop.data = h;
 		userdata[msg.sender].push(dataprop);
 
 	}
 
 	function verifyHash(address toverify, string providedHash) public returns (uint, uint) {
-		dataProperties[] dataprop = userdata[toverify];
-		for (uint i=0; i < dataprop.lenght; i++) {
-			if (dataprop[i].data == providedHash) {
-				return (dataprop[i].blockNumber, dataprop[i].blockTimestamp)
+		dataProperties[] dataprop; 
+		dataprop = userdata[toverify];
+		for (uint i=0; i < dataprop.length; i++) {
+			if (StringUtils.equal(dataprop[i].data,providedHash) ) {
+				return (dataprop[i].blockNumber, dataprop[i].blockTimestamp);
 			}
 
 		}
-		return (0, 0)
+		return (0, 0);
 
 	}
 
-
+	function killTimestamping() {
+		if (msg.sender == owner) {
+			suicide(owner);
+		}
+	}
 
 }
