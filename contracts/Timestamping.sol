@@ -40,7 +40,7 @@ contract Timestamping {
 	    return (dataprop[index].blockNumber, dataprop[index].blockTimestamp);
 	}
 
-	function verifyHash(string toverify, string providedHash) public returns (uint, uint) {
+	function verifyHash(string providedHash) public returns (uint, uint) {
 		dataProperties[] storage dataprop = userdata[msg.sender];
 		for (uint i=0; i < dataprop.length; i++) {
 			if (StringUtils.equal(dataprop[i].data,providedHash) ) {
@@ -51,9 +51,6 @@ contract Timestamping {
 		return (0, 0);
 
 	}
-
-
-
 
 	function killTimestamping() {
 		if (msg.sender == owner) {
