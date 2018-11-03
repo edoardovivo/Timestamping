@@ -5,7 +5,7 @@ pragma solidity ^0.4.17;
 import "github.com/ethereum/dapp-bin/library/stringUtils.sol";
 
 contract Timestamping {
-  
+
 	address public owner;
 
 	event Upload(address _sender, string h);
@@ -20,14 +20,14 @@ contract Timestamping {
 	mapping (address => dataProperties[]) userdata;
 
 
-	function Timestamping(address _stringutilsAddress) public payable {
+	function Timestamping() public payable {
 
 		owner = msg.sender;
 
 	}
 
 	function uploadHash(string h) public {
-		dataProperties dataprop; 
+		dataProperties dataprop;
 		dataprop.blockNumber = block.number;
 		dataprop.blockTimestamp = block.timestamp;
 		dataprop.data = h;
@@ -35,9 +35,13 @@ contract Timestamping {
 
 	}
 
-	function verifyHash(address toverify, string providedHash) public returns (uint, uint) {
-		dataProperties[] dataprop; 
-		dataprop = userdata[toverify];
+	function getHashProperties(uint index) public returns (uint, uint) {
+	    dataProperties[] storage dataprop = userdata[msg.sender];
+	    return (dataprop[index].blockNumber, dataprop[index].blockTimestamp);
+	}
+
+	function verifyHash(string toverify, string providedHash) public returns (uint, uint) {
+		dataProperties[] storage dataprop = userdata[msg.sender];
 		for (uint i=0; i < dataprop.length; i++) {
 			if (StringUtils.equal(dataprop[i].data,providedHash) ) {
 				return (dataprop[i].blockNumber, dataprop[i].blockTimestamp);
@@ -47,6 +51,9 @@ contract Timestamping {
 		return (0, 0);
 
 	}
+
+
+
 
 	function killTimestamping() {
 		if (msg.sender == owner) {
