@@ -1,9 +1,12 @@
 import web3 from './web3';
 import Timestamping from './build/Timestamping.json';
 
+const timestampingAddressPath = path.resolve(__dirname, 'deployed', 'address_timestamping.txt');
+address = fs.readFileSync(timestampingAddressPath, 'utf8')
+
 const instance = new web3.eth.Contract(
   JSON.parse(Timestamping.interface),
-  '0xAB419f8485AD809BD59896966eA0a516c88D6a3d'
+  address
 );
 
 export default instance;

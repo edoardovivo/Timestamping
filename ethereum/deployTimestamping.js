@@ -13,5 +13,12 @@ let tsByteCode = compiledTimestamping.bytecode;
 tsByteCode =  linker.linkBytecode(tsByteCode, { 'stringUtils.sol:StringUtils': address  })
 compiledTimestamping.bytecode = tsByteCode;
 
+const buildPath = path.resolve(__dirname, 'build');
+fs.ensureDirSync(buildPath);
+fs.outputJsonSync(
+  path.resolve(buildPath, "Timestamping_linked" + '.json'),
+  compiledTimestamping
+);
+
 //Deploying timestamping
 deploy.deploy(compiledTimestamping, "address_timestamping.txt");
