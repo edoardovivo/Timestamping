@@ -35,9 +35,9 @@ contract Timestamping {
 
 	}
 
-	function getHashProperties(uint index) public returns (uint, uint) {
+	function getHashProperties(uint index) public returns (string, uint, uint) {
 	    dataProperties[] storage dataprop = userdata[msg.sender];
-	    return (dataprop[index].blockNumber, dataprop[index].blockTimestamp);
+	    return (dataprop[index].data, dataprop[index].blockNumber, dataprop[index].blockTimestamp);
 	}
 
 	function verifyHash(string providedHash) public returns (uint, uint) {
