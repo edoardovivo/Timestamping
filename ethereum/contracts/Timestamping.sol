@@ -1,8 +1,8 @@
 pragma solidity ^0.4.17;
 
-//import "../Documents/Crypto/dapp-bin/library/stringUtils.sol";
+import "stringUtils.sol";
 
-import "github.com/ethereum/dapp-bin/library/stringUtils.sol";
+//import "github.com/ethereum/dapp-bin/library/stringUtils.sol";
 
 contract Timestamping {
 
@@ -20,7 +20,7 @@ contract Timestamping {
 	mapping (address => dataProperties[]) userdata;
 
 
-	function Timestamping() public payable {
+	constructor() public payable {
 
 		owner = msg.sender;
 
