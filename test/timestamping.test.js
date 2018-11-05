@@ -49,7 +49,7 @@ beforeEach(async () => {
 
 
 
-describe('Campaigns', () => {
+describe('Timestamping', () => {
   it('deploys a timestamping contract', () => {
     assert.ok(timestamping.options.address);
   });
@@ -57,7 +57,7 @@ describe('Campaigns', () => {
   it('uploads a string from a user', async () => {
     const hash = "testHash";
     const uploadHash = await timestamping.methods.uploadHash(hash).send({from: accounts[1], gas: '1000000'});
-    const uploadedHashProps = await timestamping.methods.getHashProperties(0).call({from: accounts[1], gas: '1000000'});
+    const uploadedHashProps = await timestamping.methods.getHashProperties(accounts[1],0).call({from: accounts[1], gas: '1000000'});
     assert.equal(uploadedHashProps[0], hash);
     assert(uploadedHashProps[1] != '0');
     assert(uploadedHashProps[2] != '0');
@@ -66,23 +66,33 @@ describe('Campaigns', () => {
   it('verifies a hash previously uploaded by a user', async () => {
     const hash = "testHash";
     const uploadHash = await timestamping.methods.uploadHash(hash).send({from: accounts[1], gas: '1000000'});
-    const uploadedHashProps = await timestamping.methods.getHashProperties(0).call({from: accounts[1], gas: '1000000'});
-    const verifiedHash = await timestamping.methods.verifyHash(hash).call({from: accounts[1], gas: '1000000'});
+    const uploadedHashProps = await timestamping.methods.getHashProperties(accounts[1],0).call({from: accounts[1], gas: '1000000'});
+    const verifiedHash = await timestamping.methods.verifyHash(accounts[1], hash).call({from: accounts[1], gas: '1000000'});
     assert.equal(verifiedHash[0], uploadedHashProps[1]);
     assert.equal(verifiedHash[1], uploadedHashProps[2]);
   });
 
-  //Not working. Must change contract
-  /*
   it('a second user verifies a hash previously uploaded by a user', async () => {
     const hash = "testHash";
     const uploadHash = await timestamping.methods.uploadHash(hash).send({from: accounts[1], gas: '1000000'});
-    const uploadedHashProps = await timestamping.methods.getHashProperties(0).call({from: accounts[1], gas: '1000000'});
-    const verifiedHash = await timestamping.methods.verifyHash(hash).call({from: accounts[2], gas: '1000000'});
+    const uploadedHashProps = await timestamping.methods.getHashProperties(accounts[1],0).call({from: accounts[2], gas: '1000000'});
+    const verifiedHash = await timestamping.methods.verifyHash(accounts[1],hash).call({from: accounts[2], gas: '1000000'});
     assert.equal(verifiedHash[0], uploadedHashProps[1]);
     assert.equal(verifiedHash[1], uploadedHashProps[2]);
   });
-  */
+
+  it('uploads several messages and a second account retrieves the count', async () => {
+    const hash = "testHash";
+    const numHash = 5
+    let uploadHash;
+    for (let i=0; i<numHash; i++) {
+        uploadHash = await timestamping.methods.uploadHash(hash + "_" + i.toString()).send({from: accounts[1], gas: '1000000'});
+    }
+
+    const hashCount = await timestamping.methods.getHashCount(accounts[1]).call({from: accounts[2], gas: '1000000'});
+    assert.equal(hashCount, numHash);
+  });
+
 
 
   /*

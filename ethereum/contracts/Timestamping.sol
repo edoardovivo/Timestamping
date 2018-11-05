@@ -18,6 +18,7 @@ contract Timestamping {
 	}
 
 	mapping (address => dataProperties[]) userdata;
+	mapping (address => uint) userdataCount;
 
 
 	constructor() public payable {
@@ -32,16 +33,20 @@ contract Timestamping {
 		dataprop.blockTimestamp = block.timestamp;
 		dataprop.data = h;
 		userdata[msg.sender].push(dataprop);
-
+		userdataCount[msg.sender]++;
 	}
 
-	function getHashProperties(uint index) public returns (string, uint, uint) {
-	    dataProperties[] storage dataprop = userdata[msg.sender];
+	function getHashProperties(address user, uint index) public returns (string, uint, uint) {
+	    dataProperties[] storage dataprop = userdata[user];
 	    return (dataprop[index].data, dataprop[index].blockNumber, dataprop[index].blockTimestamp);
 	}
 
-	function verifyHash(string providedHash) public returns (uint, uint) {
-		dataProperties[] storage dataprop = userdata[msg.sender];
+	function getHashCount(address user) public returns (uint) {
+		return userdataCount[user];
+	}
+
+	function verifyHash(address user, string providedHash) public returns (uint, uint) {
+		dataProperties[] storage dataprop = userdata[user];
 		for (uint i=0; i < dataprop.length; i++) {
 			if (StringUtils.equal(dataprop[i].data,providedHash) ) {
 				return (dataprop[i].blockNumber, dataprop[i].blockTimestamp);
